@@ -1,0 +1,16 @@
+{
+  "name": "nassima-counter-app",
+  "version": "1.0.0",
+  "description": "Application compteur de visites Nassima",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Nassima",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "keywords": []
+}
