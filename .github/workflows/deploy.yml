@@ -10,18 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      # 1. Récupérer le code
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      # 2. Node.js
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
 
+      # 3. Install dépendances
       - run: npm install
 
-      - run: zip -r app.zip .
+      # 4. Build (optionnel si pas de build script)
+      - run: npm run build --if-present
 
+      # 5. Deploy Azure (SANS azure/login)
       - uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: app.zip
+          package: .
