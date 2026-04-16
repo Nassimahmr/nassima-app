@@ -13,10 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ⚠️ CORRECTION ICI : utiliser 'creds' au lieu de 'publish-profile'
       - name: Login to Azure
         uses: azure/login@v1
         with:
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Login to ACR
         run: |
@@ -32,9 +33,10 @@ jobs:
         run: |
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/node-app:latest
 
+      # ✅ ICI 'publish-profile' est accepté
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: ${{ secrets.ACR_LOGIN_SERVER }}/node-app:latest%   
+          images: ${{ secrets.ACR_LOGIN_SERVER }}/node-app:latest
