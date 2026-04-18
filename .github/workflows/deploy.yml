@@ -1,4 +1,4 @@
-name:  Deploy Container just for Azure Web App
+name: Deploy Nassima App
 
 on:
   push:
@@ -10,30 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      # 1. Récupérer le code
+      - uses: actions/checkout@v4
 
-      - name: Login to Azure
-        uses: azure/login@v1
+      # 2. Node.js
+      - uses: actions/setup-node@v4
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          node-version: '22'
 
-      - name: Login to ACR
-        run: |
-          echo ${{ secrets.ACR_PASSWORD }} | docker login ${{ secrets.ACR_LOGIN_SERVER }} \
-          -u ${{ secrets.ACR_USERNAME }} --password-stdin
+      # 3. Install dépendances
+      - run: npm install
 
-      - name: Build image
-        run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/node-app:latest .
+      # 4. Build (optionnel si pas de build script)
+      - run: npm run build --if-present
 
-      - name: Push image
-        run: |
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/node-app:latest
-
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
+      # 5. Deploy Azure (SANS azure/login)
+      - uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          images: ${{ secrets.ACR_LOGIN_SERVER }}/node-app:latest
-          
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .
